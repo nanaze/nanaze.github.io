@@ -1,0 +1,41 @@
+<!html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles/styles.css"></link>
+  <meta name="google-site-verification" content="Jbq1GS6rzaZMcTfR47VpqPz-umXFqDXhTPgo4XX5H_o" />
+</head>
+<body>
+<main><h1>AWS and xrdp</h1>
+<p>2021-09-04</p>
+<p>I don't know who needs to know this but, but I ended up struggling with this for a while this evening — here are some notes on getting an Remote Desktop connection to a Linux EC2 instance on AWS using <code>xrdp</code>. <sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></p>
+<p>You must do the following things:</p>
+<ul>
+<li>Allow incoming connections on the RDP port (3389 — see <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html">AWS docs</a>).</li>
+<li>Install <code>xrdp</code> and everything with <code>apt</code>, etc.</li>
+<li>
+<p>Configure the correct window manager to run. I did this by editing <code>~/.xsession</code> to look like this: </p>
+<pre><code>xsetroot -solid gray
+exec xfce4-session
+</code></pre>
+<p>(Obviously I'm using <a href="http://xfce.org">xfce</a>).</p>
+</li>
+<li>
+<p>I'm connecting from a Windows machine, so using <a href="https://www.microsoft.com/en-us/p/microsoft-remote-desktop/9wzdncrfj3ps">Remote Desktop Connection</a>.</p>
+<p>Oddly, the middle mouse button (three fingers) from the Windows machine didn't work, so I monitored X input using <code>xev</code>. The mouse click showed up as a keypress, which I just remapped in a script. <code>117</code> was the keycode I was seeing from <code>xev</code>.</p>
+<pre><code>xkbset m  
+xkbset exp =m  
+xmodmap -e "keycode 117 = Pointer_Button2"
+</code></pre>
+</li>
+</ul>
+<p>This is probably deserving of more details — if you see this and have feedback, <a href="http://twitter.com/nanaze">tweet at me</a>, I guess. I just want to get this down somewhere so it comes up in a web search.</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>For context, I want to do some hobby development on a Linux machine but we mostly have Windows and Chrome devices sitting around the house. I could reimage an old machine, set up dual-boot, run VirtualBox, use <a href="https://docs.microsoft.com/en-us/windows/wsl">WSL</a> or <a href="https://chromeos.dev/en/linux">Crostini</a>, etc, but all of these options are kind of a pain. Rather, I'd like to just have a cloud instance I can connect to from anywhere (namely either the office or the couch) and just costs a few cents per hour.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div></main>
+</body>
+</html>
